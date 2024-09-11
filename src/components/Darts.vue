@@ -3,13 +3,13 @@
     <div ref="drawing"></div>
   </div>
   <div class="names">
-    <label for="participantCount">{{ participantCount }}</label>
+    {{ participantCount }}
     <Slider
       id="participantCount"
       v-model="participantCount"
       :min="27"
       :max="30"
-      style="width: 25rem"
+      style="width: 25rem; margin-top: 10px"
     />
     <div
       v-for="participant in participants"
@@ -18,7 +18,10 @@
       :class="{ hidden: participant.index >= participantCount }"
     >
       <label :for="'participant' + participant.index">{{ participant.index + 1 }}</label>
-      <InputText :id="'participant' + participant.index" v-model="participant.name" />
+      <InputText :id="'participant' + participant.index" v-model="participant.name" /> vs.
+      <span class="opponent" v-for="opp in [0,1,2,3]" :key="opp">
+        {{ opponent(participant.index, opp) }}
+      </span>
     </div>
   </div>
 </template>
@@ -325,6 +328,13 @@ const updateGraph = () => {
     .attr('transform', (d) => `translate(${x(d.x)}, ${y(d.y)})`);
 }
 
+const opponent = (participant: number, index: number) => {
+    if (!graph.value) return "";
+    const neighbours = graph.value.edges.get(graph.value.vertices[participant]);
+    if (!neighbours) return "";
+    return participants.value[neighbours[index].index].name;
+}
+
 d3.select(window).on("resize.updatechart", updateGraph);
 
 onMounted(() => {
@@ -352,23 +362,26 @@ watch(graph, () => {
   gap: 2rem;
   margin: 1rem;
 }
+.name label {
+  width: 1rem;
+}
 .names {
   justify-content: center;
   height: 100vh;
-  width: 25vw;
+  width: 40vw;
 }
 .graph {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width: 75vw;
+  width: 60vw;
 }
 .graph div {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 90%;
   height: 100%;
 }
 </style>
