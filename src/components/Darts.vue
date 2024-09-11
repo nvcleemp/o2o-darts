@@ -306,13 +306,7 @@ const updateGraph = () => {
     )
     .transition()
     .duration(1000)
-    .attr("d", (d) => {
-        const tx = x(d.target.x);
-        const ty = y(d.target.y);
-        const sx = x(d.source.x);
-        const sy = y(d.source.y);
-        return `M${sx},${sy} L${tx},${ty}`;
-    });
+    .attr("d", (d) => `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`);
 
   verticesGroup
     .selectAll('g')
