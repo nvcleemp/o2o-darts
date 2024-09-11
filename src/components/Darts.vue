@@ -18,7 +18,7 @@
       :class="{ hidden: participant.index >= participantCount }"
     >
       <label :for="'participant' + participant.index">{{ participant.index + 1 }}</label>
-      <InputText :id="'participant' + participant.index" v-model="participant.name" /> vs.
+      <InputText :id="'participant' + participant.index" v-model="participant.name" @update:model-value="currentParticipant = participant.index" /> vs.
       <span class="opponent" v-for="opp in [0,1,2,3]" :key="opp">
         {{ opponent(participant.index, opp) }}
       </span>
@@ -35,6 +35,8 @@ import InputText from 'primevue/inputtext'
 import Slider from 'primevue/slider'
 
 const participantCount = ref(27)
+
+const currentParticipant = ref(-1)
 
 class Participant {
   name: string
@@ -309,7 +311,10 @@ const updateGraph = () => {
     )
     .transition()
     .duration(1000)
-    .attr("d", (d) => `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`);
+    .attr("d", (d) => `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`)
+    .attr("stroke", (d) => (currentParticipant.value == d.source.index || currentParticipant.value == d.target.index) ? "blue" : "currentColor")
+    .attr("stroke-width", (d) => (currentParticipant.value == d.source.index || currentParticipant.value == d.target.index) ? 3 : 1.5);
+  
 
   verticesGroup
     .selectAll('g')
