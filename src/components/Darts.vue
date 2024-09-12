@@ -298,8 +298,8 @@ const updateGraph = () => {
 
     const size = Math.min(width, height);
 
-    const y = d3.scaleLinear().nice().domain([minY, maxY]).range([size, 0]);
-    const x = d3.scaleLinear().nice().domain([minX, maxX]).range([0, size]);
+    const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2, (height - size)/2]);
+    const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2, width - (width - size)/2]);
 
   edgesGroup
     .selectAll("path")
