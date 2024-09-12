@@ -371,6 +371,7 @@ watch(graph, () => {
   width: 1rem;
 }
 .names {
+  overflow-y: auto;
   justify-content: center;
   height: 100vh;
   width: 40vw;
