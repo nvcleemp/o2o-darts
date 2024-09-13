@@ -93,7 +93,7 @@ const setupGraph = () => {
     if (!drawing.value) return
 
     const margin = { top: 20, right: 30, bottom: 30, left: 40 }
-    const width = drawing.value.clientWidth / 2 - margin.left - margin.right
+    const width = drawing.value.clientWidth - margin.left - margin.right
     const height = drawing.value.clientHeight - margin.top - margin.bottom
 
     const svg = d3
@@ -138,10 +138,10 @@ const updateGraph = () => {
     const maxY = Math.max(...vertices.map((v) => v.y));
 
     const margin = { top: 20, right: 30, bottom: 30, left: 40 }
-    const width = drawing.value.clientWidth / 2 - margin.left - margin.right
+    const width = drawing.value.clientWidth - margin.left - margin.right
     const height = drawing.value.clientHeight - margin.top - margin.bottom
 
-    const size = Math.min(width, height);
+    const size = Math.min(width, height) - 50;
 
     const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2, (height - size)/2]);
     const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2, width - (width - size)/2]);
