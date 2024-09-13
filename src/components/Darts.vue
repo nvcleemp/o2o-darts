@@ -388,6 +388,7 @@ watch(graph, () => {
   justify-content: center;
   height: 100vh;
   width: 40vw;
+  padding-left: 1rem;
 }
 .graph {
   display: flex;
