@@ -7,8 +7,8 @@
     <Slider
       id="participantCount"
       v-model="participantCount"
-      :min="27"
-      :max="30"
+      :min="Math.min(...Object.keys(graphs).map(s => parseInt(s)))"
+      :max="Math.max(...Object.keys(graphs).map(s => parseInt(s)))"
       style="width: 25rem; margin-top: 10px"
     />
     <div
