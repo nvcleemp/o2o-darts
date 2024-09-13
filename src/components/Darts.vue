@@ -170,7 +170,7 @@ const updateGraph = () => {
           .selectAll('circle')
           .data([1])
           .join('circle')
-          .attr('stroke', 'white')
+          .attr('stroke', 'Canvas')
           .attr('stroke-width', 1.5)
           .transition()
           .duration(1000)
@@ -179,7 +179,7 @@ const updateGraph = () => {
     })
     .call(el => {
         el.selectAll('text').remove();
-        el.append('text').attr('x', 8).attr('y', '0.31em').text((d) => participants.value[d.index].name).clone(true).lower().attr('fill', 'none').attr('stroke', 'white').attr('stroke-width', 3);
+        el.append('text').attr('x', 8).attr('y', '0.31em').text((d) => participants.value[d.index].name).clone(true).lower().attr('fill', 'none').attr('stroke', 'Canvas').attr('stroke-width', 3);
     })
     .transition()
     .duration(1000)
