@@ -325,9 +325,17 @@ const updateGraph = () => {
     .selectAll('g')
     .data(vertices)
     .join('g')
-    .call(el => {
-        el.selectAll('circle').remove();
-        el.append('circle').attr('r', 4).attr('stroke', 'white').attr('stroke-width', 1.5);
+    .each(function(parent) {
+        d3.select(this)
+          .selectAll('circle')
+          .data([1])
+          .join('circle')
+          .attr('stroke', 'white')
+          .attr('stroke-width', 1.5)
+          .transition()
+          .duration(1000)
+          .attr('r', () => participants.value[parent.index].current ? 8 : 4)
+          .attr('fill', () => participants.value[parent.index].current ? "blue" : "currentColor");
     })
     .call(el => {
         el.selectAll('text').remove();
