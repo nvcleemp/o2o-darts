@@ -62,7 +62,7 @@ class Participant {
   }
 }
 
-const participantsArray = Array(40) as Participant[]
+const participantsArray = Array(Math.max(...Object.keys(graphs).map(s => parseInt(s)))) as Participant[]
 
 for (let i = 0; i < participantsArray.length; i++) {
   const name = localStorage.getItem('participant' + i) || ''
