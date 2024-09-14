@@ -46,7 +46,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Slider from 'primevue/slider'
 
-import { Graph, Vertex } from '@/models/graph';
+import { Graph } from '@/models/graph';
 import graphs from '@/data/graphs';
 
 const participantCount = ref(27)
