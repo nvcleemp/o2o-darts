@@ -51,7 +51,7 @@ import Slider from 'primevue/slider'
 import { Graph } from '@/models/graph'
 import graphs from '@/data/graphs'
 
-const participantCount = ref(27)
+const participantCount = ref(Math.min(...Object.keys(graphs).map((s) => parseInt(s))))
 
 class Participant {
   name: string
@@ -88,7 +88,7 @@ watch(
 //Graph
 
 const drawing = ref<HTMLDivElement | null>(null)
-const graph = ref<Graph>(graphs[27])
+const graph = ref<Graph>(graphs[participantCount.value])
 let edgesGroup: d3.Selection<SVGGElement, unknown, null, undefined>
 let verticesGroup: d3.Selection<SVGGElement, unknown, null, undefined>
 
