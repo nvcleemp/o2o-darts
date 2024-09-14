@@ -7,8 +7,8 @@
     <Slider
       id="participantCount"
       v-model="participantCount"
-      :min="Math.min(...Object.keys(graphs).map(s => parseInt(s)))"
-      :max="Math.max(...Object.keys(graphs).map(s => parseInt(s)))"
+      :min="Math.min(...Object.keys(graphs).map((s) => parseInt(s)))"
+      :max="Math.max(...Object.keys(graphs).map((s) => parseInt(s)))"
       style="width: 25rem; margin-top: 10px"
     />
     <div
@@ -23,16 +23,18 @@
         v-model="participant.name"
         @focus="participant.current = true"
         @blur="participant.current = false"
-      /> vs.
-      <span class="opponent" v-for="opp in [0,1,2,3]" :key="opp">
+      />
+      vs.
+      <span class="opponent" v-for="opp in [0, 1, 2, 3]" :key="opp">
         {{ opponent(participant.index, opp) }}
       </span>
     </div>
     <Button
       @click="copyGames"
-      style="width: 25rem; margin-top: 10px; margin-bottom: 5rem;"
+      style="width: 25rem; margin-top: 10px; margin-bottom: 5rem"
       :loading="copied"
-    >{{ copied ? "Gekopieerd" : "Kopieer wedstrijden" }}</Button>
+      >{{ copied ? 'Gekopieerd' : 'Kopieer wedstrijden' }}</Button
+    >
   </div>
 </template>
 
@@ -46,8 +48,8 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Slider from 'primevue/slider'
 
-import { Graph } from '@/models/graph';
-import graphs from '@/data/graphs';
+import { Graph } from '@/models/graph'
+import graphs from '@/data/graphs'
 
 const participantCount = ref(27)
 
@@ -62,7 +64,9 @@ class Participant {
   }
 }
 
-const participantsArray = Array(Math.max(...Object.keys(graphs).map(s => parseInt(s)))) as Participant[]
+const participantsArray = Array(
+  Math.max(...Object.keys(graphs).map((s) => parseInt(s)))
+) as Participant[]
 
 for (let i = 0; i < participantsArray.length; i++) {
   const name = localStorage.getItem('participant' + i) || ''
@@ -83,42 +87,42 @@ watch(
 
 //Graph
 
-const drawing = ref<HTMLDivElement | null>(null);
-const graph = ref<Graph>(graphs[27]);
-let edgesGroup: d3.Selection<SVGGElement, unknown, null, undefined>;
-let verticesGroup: d3.Selection<SVGGElement, unknown, null, undefined>;
+const drawing = ref<HTMLDivElement | null>(null)
+const graph = ref<Graph>(graphs[27])
+let edgesGroup: d3.Selection<SVGGElement, unknown, null, undefined>
+let verticesGroup: d3.Selection<SVGGElement, unknown, null, undefined>
 
 watch(participantCount, (newCount: number) => {
-    graph.value = graphs[newCount] as Graph;
-});
+  graph.value = graphs[newCount] as Graph
+})
 
 const setupGraph = () => {
-    if (!drawing.value) return
+  if (!drawing.value) return
 
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 }
-    const width = drawing.value.clientWidth - margin.left - margin.right
-    const height = drawing.value.clientHeight - margin.top - margin.bottom
+  const margin = { top: 20, right: 30, bottom: 30, left: 40 }
+  const width = drawing.value.clientWidth - margin.left - margin.right
+  const height = drawing.value.clientHeight - margin.top - margin.bottom
 
-    const svg = d3
-        .select(drawing.value)
-        .append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', `translate(${margin.left}, ${margin.top})`);
-    
-    edgesGroup = svg
-        .append("g")
-        .classed("edges", true)
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("stroke", "currentColor");
-    verticesGroup = svg
-        .append("g")
-        .classed("vertices", true)
-        .attr("fill", "currentColor")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-linejoin", "round");
+  const svg = d3
+    .select(drawing.value)
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+  edgesGroup = svg
+    .append('g')
+    .classed('edges', true)
+    .attr('fill', 'none')
+    .attr('stroke-width', 1.5)
+    .attr('stroke', 'currentColor')
+  verticesGroup = svg
+    .append('g')
+    .classed('vertices', true)
+    .attr('fill', 'currentColor')
+    .attr('stroke-linecap', 'round')
+    .attr('stroke-linejoin', 'round')
 }
 
 const updateGraph = () => {
@@ -127,128 +131,161 @@ const updateGraph = () => {
 
   const { vertices, edges } = graph.value
 
-  const edgeList = [];
+  const edgeList = []
   for (const [from, tos] of edges) {
     for (const to of tos) {
-        if(to.index < from.index) continue;
-        edgeList.push({ source: from, target: to});
+      if (to.index < from.index) continue
+      edgeList.push({ source: from, target: to })
     }
   }
 
-    const minX = Math.min(...vertices.map((v) => v.x));
-    const maxX = Math.max(...vertices.map((v) => v.x));
-    const minY = Math.min(...vertices.map((v) => v.y));
-    const maxY = Math.max(...vertices.map((v) => v.y));
+  const minX = Math.min(...vertices.map((v) => v.x))
+  const maxX = Math.max(...vertices.map((v) => v.x))
+  const minY = Math.min(...vertices.map((v) => v.y))
+  const maxY = Math.max(...vertices.map((v) => v.y))
 
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 }
-    const width = drawing.value.clientWidth - margin.left - margin.right
-    const height = drawing.value.clientHeight - margin.top - margin.bottom
+  const margin = { top: 20, right: 30, bottom: 30, left: 40 }
+  const width = drawing.value.clientWidth - margin.left - margin.right
+  const height = drawing.value.clientHeight - margin.top - margin.bottom
 
-    const size = Math.min(width, height);
-    const padding = (graph.value.hasArcWeight() ? 150 : 50);
+  const size = Math.min(width, height)
+  const padding = graph.value.hasArcWeight() ? 150 : 50
 
-    const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2 - padding, (height - size)/2 + padding]);
-    const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2 + padding, width - (width - size)/2 - padding]);
+  const y = d3
+    .scaleLinear()
+    .nice()
+    .domain([minY, maxY])
+    .range([height - (height - size) / 2 - padding, (height - size) / 2 + padding])
+  const x = d3
+    .scaleLinear()
+    .nice()
+    .domain([minX, maxX])
+    .range([(width - size) / 2 + padding, width - (width - size) / 2 - padding])
 
   edgesGroup
-    .selectAll("path")
+    .selectAll('path')
     .data(edgeList)
     .join(
-        enter => enter.append("path").attr("d", "M0,0 L0,0"),
-        update => update,
-        exit => exit.remove()
+      (enter) => enter.append('path').attr('d', 'M0,0 L0,0'),
+      (update) => update,
+      (exit) => exit.remove()
     )
     .transition()
     .duration(1000)
-    .attr("d", (d) => {
-      const arcWeight = graph.value.getArcedWeight(d.source, d.target);
+    .attr('d', (d) => {
+      const arcWeight = graph.value.getArcedWeight(d.source, d.target)
       if (arcWeight === 0) {
-        return `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`;
+        return `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`
       } else {
-        const dx = x(d.target.x) - x(d.source.x);
-        const dy = y(d.target.y) - y(d.source.y);
-        const dr = Math.sqrt(dx * dx + dy * dy);
-        const sweep = arcWeight > 0 ? 0 : 1;
-        return `M${x(d.source.x)},${y(d.source.y)} A${dr},${dr} 0 0,${sweep} ${x(d.target.x)},${y(d.target.y)}`;
+        const dx = x(d.target.x) - x(d.source.x)
+        const dy = y(d.target.y) - y(d.source.y)
+        const dr = Math.sqrt(dx * dx + dy * dy)
+        const sweep = arcWeight > 0 ? 0 : 1
+        return `M${x(d.source.x)},${y(d.source.y)} A${dr},${dr} 0 0,${sweep} ${x(d.target.x)},${y(d.target.y)}`
       }
     })
-    .attr("stroke", (d) => (participants.value[d.source.index].current || participants.value[d.target.index].current) ? "blue" : "currentColor")
-    .attr("stroke-width", (d) => (participants.value[d.source.index].current || participants.value[d.target.index].current) ? 3 : 1.5);
-  
+    .attr('stroke', (d) =>
+      participants.value[d.source.index].current || participants.value[d.target.index].current
+        ? 'blue'
+        : 'currentColor'
+    )
+    .attr('stroke-width', (d) =>
+      participants.value[d.source.index].current || participants.value[d.target.index].current
+        ? 3
+        : 1.5
+    )
 
   verticesGroup
     .selectAll('g')
     .data(vertices)
     .join('g')
-    .each(function(parent) {
-        d3.select(this)
-          .selectAll('circle')
-          .data([1])
-          .join('circle')
-          .attr('stroke', 'Canvas')
-          .attr('stroke-width', 1.5)
-          .transition()
-          .duration(1000)
-          .attr('r', () => participants.value[parent.index].current ? 8 : 4)
-          .attr('fill', () => participants.value[parent.index].current ? "blue" : "currentColor");
+    .each(function (parent) {
+      d3.select(this)
+        .selectAll('circle')
+        .data([1])
+        .join('circle')
+        .attr('stroke', 'Canvas')
+        .attr('stroke-width', 1.5)
+        .transition()
+        .duration(1000)
+        .attr('r', () => (participants.value[parent.index].current ? 8 : 4))
+        .attr('fill', () => (participants.value[parent.index].current ? 'blue' : 'currentColor'))
     })
-    .call(el => {
-        el.selectAll('text').remove();
-        el.append('text').attr('x', 8).attr('y', '0.31em').text((d) => participants.value[d.index].name).clone(true).lower().attr('fill', 'none').attr('stroke', 'Canvas').attr('stroke-width', 3);
+    .call((el) => {
+      el.selectAll('text').remove()
+      el.append('text')
+        .attr('x', 8)
+        .attr('y', '0.31em')
+        .text((d) => participants.value[d.index].name)
+        .clone(true)
+        .lower()
+        .attr('fill', 'none')
+        .attr('stroke', 'Canvas')
+        .attr('stroke-width', 3)
     })
     .transition()
     .duration(1000)
-    .attr('transform', (d) => `translate(${x(d.x)}, ${y(d.y)})`);
+    .attr('transform', (d) => `translate(${x(d.x)}, ${y(d.y)})`)
 }
 
 const opponent = (participant: number, index: number) => {
-    if (!graph.value) return "";
-    const neighbours = graph.value.edges.get(graph.value.vertices[participant]);
-    if (!neighbours) return "";
-    return participants.value[neighbours[index].index].name;
+  if (!graph.value) return ''
+  const neighbours = graph.value.edges.get(graph.value.vertices[participant])
+  if (!neighbours) return ''
+  return participants.value[neighbours[index].index].name
 }
 
-d3.select(window).on("resize.updatechart", updateGraph);
+d3.select(window).on('resize.updatechart', updateGraph)
 
 onMounted(() => {
-    setupGraph();
-    updateGraph();
-});
+  setupGraph()
+  updateGraph()
+})
 
-watch(participants, () => {
-    updateGraph();
-},
-{ deep: true });
+watch(
+  participants,
+  () => {
+    updateGraph()
+  },
+  { deep: true }
+)
 
 watch(graph, () => {
-    updateGraph();
-});
+  updateGraph()
+})
 
-const games = ref("")
+const games = ref('')
 
 const { copy, copied, isSupported } = useClipboard({ source: games })
 
 const constructGames = () => {
   const gamesArray = []
   //full table
-  gamesArray.push("Volledige tabel:")
+  gamesArray.push('Volledige tabel:')
   for (const v of graph.value.vertices) {
-    gamesArray.push(`${participants.value[v.index].name} vs. [${graph.value.edges.get(v)?.map((v) => participants.value[v.index].name).join(", ")}]`)
+    gamesArray.push(
+      `${participants.value[v.index].name} vs. [${graph.value.edges
+        .get(v)
+        ?.map((v) => participants.value[v.index].name)
+        .join(', ')}]`
+    )
   }
-  gamesArray.push("")
+  gamesArray.push('')
 
   //individual games
-  gamesArray.push("Wedstrijden:")
+  gamesArray.push('Wedstrijden:')
   for (const [from, tos] of graph.value.edges) {
     for (const to of tos) {
       if (to.index < from.index) continue
-      gamesArray.push(`${participants.value[from.index].name} vs. ${participants.value[to.index].name}`)
+      gamesArray.push(
+        `${participants.value[from.index].name} vs. ${participants.value[to.index].name}`
+      )
     }
   }
-  games.value = gamesArray.join("\n")
+  games.value = gamesArray.join('\n')
 }
 
-constructGames();
+constructGames()
 
 const copyGames = () => {
   if (isSupported.value) {
