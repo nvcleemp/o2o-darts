@@ -1,6 +1,10 @@
 import { Graph, Vertex } from '@/models/graph';
 
-const constructGraph = (order: number, input: any) => {
+type GraphInput = {
+    [key: number]: number[][]
+}
+
+const constructGraph = (order: number, input: GraphInput) => {
     const vertices = Array(order).fill(0).map((_, i) => new Vertex(i, input[i][0][0], input[i][0][1]));
     const edges = new Map<Vertex, Vertex[]>();
     for (let i = 0; i < order; i++) {
