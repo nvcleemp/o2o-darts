@@ -88,10 +88,6 @@ const graph = ref<Graph>(graphs[27]);
 let edgesGroup: d3.Selection<SVGGElement, unknown, null, undefined>;
 let verticesGroup: d3.Selection<SVGGElement, unknown, null, undefined>;
 
-let x: d3.ScaleTime<number, number, never>
-let y: d3.ScaleLinear<number, number, never>
-let line: d3.Line<{ date: Date; value: number }>
-
 watch(participantCount, (newCount: number) => {
     graph.value = graphs[newCount] as Graph;
 });
