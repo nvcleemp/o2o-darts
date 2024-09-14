@@ -148,10 +148,11 @@ const updateGraph = () => {
     const width = drawing.value.clientWidth - margin.left - margin.right
     const height = drawing.value.clientHeight - margin.top - margin.bottom
 
-    const size = Math.min(width, height) - (graph.value.hasArcWeight() ? 250 : 50);
+    const size = Math.min(width, height);
+    const padding = (graph.value.hasArcWeight() ? 150 : 50);
 
-    const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2, (height - size)/2]);
-    const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2, width - (width - size)/2]);
+    const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2 - padding, (height - size)/2 + padding]);
+    const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2 + padding, width - (width - size)/2 - padding]);
 
   edgesGroup
     .selectAll("path")
