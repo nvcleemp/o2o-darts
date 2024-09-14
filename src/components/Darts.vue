@@ -148,7 +148,7 @@ const updateGraph = () => {
     const width = drawing.value.clientWidth - margin.left - margin.right
     const height = drawing.value.clientHeight - margin.top - margin.bottom
 
-    const size = Math.min(width, height) - 50;
+    const size = Math.min(width, height) - (graph.value.hasArcWeight() ? 250 : 50);
 
     const y = d3.scaleLinear().nice().domain([minY, maxY]).range([height - (height - size)/2, (height - size)/2]);
     const x = d3.scaleLinear().nice().domain([minX, maxX]).range([(width - size)/2, width - (width - size)/2]);
@@ -163,7 +163,18 @@ const updateGraph = () => {
     )
     .transition()
     .duration(1000)
-    .attr("d", (d) => `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`)
+    .attr("d", (d) => {
+      const arcWeight = graph.value.getArcedWeight(d.source, d.target);
+      if (arcWeight === 0) {
+        return `M${x(d.source.x)},${y(d.source.y)} L${x(d.target.x)},${y(d.target.y)}`;
+      } else {
+        const dx = x(d.target.x) - x(d.source.x);
+        const dy = y(d.target.y) - y(d.source.y);
+        const dr = Math.sqrt(dx * dx + dy * dy);
+        const sweep = arcWeight > 0 ? 0 : 1;
+        return `M${x(d.source.x)},${y(d.source.y)} A${dr},${dr} 0 0,${sweep} ${x(d.target.x)},${y(d.target.y)}`;
+      }
+    })
     .attr("stroke", (d) => (participants.value[d.source.index].current || participants.value[d.target.index].current) ? "blue" : "currentColor")
     .attr("stroke-width", (d) => (participants.value[d.source.index].current || participants.value[d.target.index].current) ? 3 : 1.5);
   

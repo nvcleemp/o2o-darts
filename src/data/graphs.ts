@@ -4,13 +4,25 @@ type GraphInput = {
     [key: number]: number[][]
 }
 
-const constructGraph = (order: number, input: GraphInput) => {
+const constructGraph = (order: number, input: GraphInput, arced?: number[][]) => {
     const vertices = Array(order).fill(0).map((_, i) => new Vertex(i, input[i][0][0], input[i][0][1]));
     const edges = new Map<Vertex, Vertex[]>();
     for (let i = 0; i < order; i++) {
         edges.set(vertices[i], vertices.filter((_, j) => input[i][1].includes(j)));
     }
-    return new Graph(vertices, edges);
+    if (arced) {
+        const arcedMap = new Map<Vertex, Map<Vertex, number>>();
+        for (let i = 0; i < order; i++) {
+            const vertexMap = new Map<Vertex, number>();
+            arcedMap.set(vertices[i], vertexMap);
+        }
+        arced.forEach(([i, j, weight]) => {
+            arcedMap?.get(vertices[i])?.set(vertices[j], weight);
+        });
+        return new Graph(vertices, edges, arcedMap);
+    } else {
+        return new Graph(vertices, edges);
+    }
 }
 
 type Graphs = {
@@ -472,7 +484,13 @@ const graphs: Graphs = {
       36:[[60.922851, 35.818503],[2, 9, 31, 38]],
       37:[[54.378653, 45.176658],[4, 18, 26, 31]],
       38:[[57.066426, 32.058418],[2, 9, 13, 36]],
-    }),
+    },
+    [
+        [11, 23, 1], [23, 11, -1],
+        [29, 23, -1], [23, 29, 1],
+        [29, 11, 1], [11, 29, -1],
+    ]
+    ),
     40: constructGraph(40, {
         0:[[0.010359391451057576, -0.5821946242710352],[8, 18, 19, 31]],
         1:[[-0.8516071726407562, 0.6840941523702774],[4, 9, 20, 35]],
