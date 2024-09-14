@@ -28,14 +28,21 @@
         {{ opponent(participant.index, opp) }}
       </span>
     </div>
+    <Button
+      @click="copyGames"
+      style="width: 25rem; margin-top: 10px; margin-bottom: 5rem;"
+      :loading="copied"
+    >{{ copied ? "Gekopieerd" : "Kopieer wedstrijden" }}</Button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { useClipboard } from '@vueuse/core'
 
 import * as d3 from 'd3'
 
+import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Slider from 'primevue/slider'
 
@@ -208,6 +215,42 @@ watch(participants, () => {
 watch(graph, () => {
     updateGraph();
 });
+
+const games = ref("")
+
+const { copy, copied, isSupported } = useClipboard({ source: games })
+
+const constructGames = () => {
+  const gamesArray = []
+  //full table
+  gamesArray.push("Volledige tabel:")
+  for (const v of graph.value.vertices) {
+    gamesArray.push(`${participants.value[v.index].name} vs. [${graph.value.edges.get(v)?.map((v) => participants.value[v.index].name).join(", ")}]`)
+  }
+  gamesArray.push("")
+
+  //individual games
+  gamesArray.push("Wedstrijden:")
+  for (const [from, tos] of graph.value.edges) {
+    for (const to of tos) {
+      if (to.index < from.index) continue
+      gamesArray.push(`${participants.value[from.index].name} vs. ${participants.value[to.index].name}`)
+    }
+  }
+  games.value = gamesArray.join("\n")
+}
+
+constructGames();
+
+const copyGames = () => {
+  if (isSupported.value) {
+    copy(games.value)
+  } else {
+    console.log(games.value)
+  }
+}
+
+watch(participants, constructGames, { deep: true })
 </script>
 
 <style scoped>
