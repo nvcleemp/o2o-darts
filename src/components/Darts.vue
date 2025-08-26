@@ -50,6 +50,7 @@ import Slider from 'primevue/slider'
 
 import { Graph } from '@/models/graph'
 import graphs from '@/data/graphs'
+import { setParticipant, getAllParticipants } from '@/services/participants-service'
 
 const participantCount = ref(Math.min(...Object.keys(graphs).map((s) => parseInt(s))))
 
@@ -67,19 +68,23 @@ class Participant {
 const participantsArray = Array(
   Math.max(...Object.keys(graphs).map((s) => parseInt(s)))
 ) as Participant[]
+const participants = ref(participantsArray)
 
-for (let i = 0; i < participantsArray.length; i++) {
-  const name = localStorage.getItem('participant' + i) || ''
-  participantsArray[i] = new Participant(name, i)
+async function loadParticipants() {
+  const names = await getAllParticipants(participantsArray.length)
+  for (let i = 0; i < participantsArray.length; i++) {
+    participantsArray[i] = new Participant(names[i], i)
+  }
+  participants.value = [...participantsArray]
 }
 
-const participants = ref(participantsArray)
+loadParticipants()
 
 watch(
   participants,
   (newParticipants) => {
     for (let i = 0; i < newParticipants.length; i++) {
-      localStorage.setItem('participant' + i, newParticipants[i].name)
+      setParticipant(i, newParticipants[i].name)
     }
   },
   { deep: true }
@@ -263,12 +268,14 @@ const constructGames = () => {
   //full table
   gamesArray.push('Volledige tabel:')
   for (const v of graph.value.vertices) {
-    gamesArray.push(
+    if(participants.value[v.index]){
+          gamesArray.push(
       `${participants.value[v.index].name} vs. [${graph.value.edges
         .get(v)
         ?.map((v) => participants.value[v.index].name)
         .join(', ')}]`
     )
+    }
   }
   gamesArray.push('')
 
@@ -277,9 +284,11 @@ const constructGames = () => {
   for (const [from, tos] of graph.value.edges) {
     for (const to of tos) {
       if (to.index < from.index) continue
+      if(participants.value[from.index] && participants.value[to.index]){
       gamesArray.push(
         `${participants.value[from.index].name} vs. ${participants.value[to.index].name}`
       )
+      }
     }
   }
   games.value = gamesArray.join('\n')
