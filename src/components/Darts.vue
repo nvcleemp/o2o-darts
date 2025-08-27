@@ -12,7 +12,7 @@
       style="width: 25rem; margin-top: 10px"
     />
     <div
-      v-for="participant in participants"
+      v-for="participant in participants.slice(0, participantCount).filter((p) => p)"
       :key="participant.index"
       class="name"
       :class="{ hidden: participant.index >= participantCount }"
@@ -65,9 +65,9 @@ class Participant {
   }
 }
 
-const participantsArray = Array(
-  Math.max(...Object.keys(graphs).map((s) => parseInt(s)))
-) as Participant[]
+const participantsArray = Array(Math.max(...Object.keys(graphs).map((s) => parseInt(s)))).map(
+  (val, i) => new Participant('', i)
+)
 const participants = ref(participantsArray)
 
 async function loadParticipants() {
@@ -190,12 +190,12 @@ const updateGraph = () => {
       }
     })
     .attr('stroke', (d) =>
-      participants.value[d.source.index].current || participants.value[d.target.index].current
+      participants.value[d.source.index]?.current || participants.value[d.target.index]?.current
         ? 'blue'
         : 'currentColor'
     )
     .attr('stroke-width', (d) =>
-      participants.value[d.source.index].current || participants.value[d.target.index].current
+      participants.value[d.source.index]?.current || participants.value[d.target.index]?.current
         ? 3
         : 1.5
     )
@@ -213,15 +213,15 @@ const updateGraph = () => {
         .attr('stroke-width', 1.5)
         .transition()
         .duration(1000)
-        .attr('r', () => (participants.value[parent.index].current ? 8 : 4))
-        .attr('fill', () => (participants.value[parent.index].current ? 'blue' : 'currentColor'))
+        .attr('r', () => (participants.value[parent.index]?.current ? 8 : 4))
+        .attr('fill', () => (participants.value[parent.index]?.current ? 'blue' : 'currentColor'))
     })
     .call((el) => {
       el.selectAll('text').remove()
       el.append('text')
         .attr('x', 8)
         .attr('y', '0.31em')
-        .text((d) => participants.value[d.index].name)
+        .text((d) => participants.value[d.index]?.name)
         .clone(true)
         .lower()
         .attr('fill', 'none')
@@ -237,7 +237,7 @@ const opponent = (participant: number, index: number) => {
   if (!graph.value) return ''
   const neighbours = graph.value.edges.get(graph.value.vertices[participant])
   if (!neighbours) return ''
-  return participants.value[neighbours[index].index].name
+  return participants.value[neighbours[index].index]?.name
 }
 
 d3.select(window).on('resize.updatechart', updateGraph)
@@ -268,13 +268,13 @@ const constructGames = () => {
   //full table
   gamesArray.push('Volledige tabel:')
   for (const v of graph.value.vertices) {
-    if(participants.value[v.index]){
-          gamesArray.push(
-      `${participants.value[v.index].name} vs. [${graph.value.edges
-        .get(v)
-        ?.map((v) => participants.value[v.index].name)
-        .join(', ')}]`
-    )
+    if (participants.value[v.index]) {
+      gamesArray.push(
+        `${participants.value[v.index].name} vs. [${graph.value.edges
+          .get(v)
+          ?.map((v) => participants.value[v.index].name)
+          .join(', ')}]`
+      )
     }
   }
   gamesArray.push('')
@@ -284,10 +284,10 @@ const constructGames = () => {
   for (const [from, tos] of graph.value.edges) {
     for (const to of tos) {
       if (to.index < from.index) continue
-      if(participants.value[from.index] && participants.value[to.index]){
-      gamesArray.push(
-        `${participants.value[from.index].name} vs. ${participants.value[to.index].name}`
-      )
+      if (participants.value[from.index] && participants.value[to.index]) {
+        gamesArray.push(
+          `${participants.value[from.index].name} vs. ${participants.value[to.index].name}`
+        )
       }
     }
   }
